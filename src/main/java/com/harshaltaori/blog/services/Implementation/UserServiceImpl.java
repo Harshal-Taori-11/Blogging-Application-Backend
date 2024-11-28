@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.harshaltaori.blog.models.User;
-import com.harshaltaori.blog.payloads.UserDTO;
+import com.harshaltaori.blog.payloads.UserDto;
 import com.harshaltaori.blog.repositories.UserRepository;
 import com.harshaltaori.blog.services.UserService;
 import com.harshaltaori.blog.exceptions.ResourceNotFoundException;
@@ -19,45 +19,45 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	private User userDTOToUser(UserDTO userDTO) {
-		return modelMapper.map(userDTO,User.class);
+	private User userDtoToUser(UserDto userDto) {
+		return modelMapper.map(userDto,User.class);
 	}
 	
-	private UserDTO userToUserDTO(User user) {
-		return modelMapper.map(user, UserDTO.class);
+	private UserDto userToUserDto(User user) {
+		return modelMapper.map(user, UserDto.class);
 	}
 	
 
 	@Override
-	public UserDTO createUser(UserDTO userDTO) {
+	public UserDto createUser(UserDto userDto) {
 		
-		User user = this.userDTOToUser(userDTO);
+		User user = this.userDtoToUser(userDto);
 		User savedUser = this.userRepository.save(user);
 		
-		return userToUserDTO(savedUser);
+		return this.userToUserDto(savedUser);
 	}
 
 	@Override
-	public UserDTO updateUser(UserDTO userDTO, Integer userId) {
+	public UserDto updateUser(UserDto userDto, Integer userId) {
 		
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User" , userId));
 		
-		user.setUserName(userDTO.getUserName());
-		user.setPassword(userDTO.getPassword());
-		user.setEmailId(userDTO.getEmailId());
-		user.setAbout(userDTO.getAbout());
+		user.setUserName(userDto.getUserName());
+		user.setPassword(userDto.getPassword());
+		user.setEmailId(userDto.getEmailId());
+		user.setAbout(userDto.getAbout());
 		
 		User updatedUser = this.userRepository.save(user);
 		
-		return userToUserDTO(updatedUser);
+		return this.userToUserDto(updatedUser);
 	}
 
 	@Override
-	public UserDTO getUserById(Integer userId) {
+	public UserDto getUserById(Integer userId) {
 		
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User" , userId));
 	
-		return userToUserDTO(user);
+		return this.userToUserDto(user);
 	}
 
 }

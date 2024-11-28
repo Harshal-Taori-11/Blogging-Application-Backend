@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.harshaltaori.blog.payloads.UserDTO;
+import com.harshaltaori.blog.payloads.UserDto;
 import com.harshaltaori.blog.services.UserService;
 
 import jakarta.validation.Valid;
@@ -25,26 +25,23 @@ public class UserController {
 	
 	
 	@PostMapping("/")
-	public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO){
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
 		
-		UserDTO createdUserDTO = this.userService.createUser(userDTO); 
-		return new ResponseEntity<UserDTO>(createdUserDTO,HttpStatus.CREATED);
+		UserDto createdUserDto = this.userService.createUser(userDto); 
+		return new ResponseEntity<UserDto>(createdUserDto,HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{userId}")
-	public ResponseEntity<UserDTO> getUser(@PathVariable("userId") Integer userId){
-		UserDTO userDTO = this.userService.getUserById(userId);
-		return ResponseEntity.ok(userDTO);
+	public ResponseEntity<UserDto> getUser(@PathVariable("userId") Integer userId){
+		UserDto userDto = this.userService.getUserById(userId);
+		return ResponseEntity.ok(userDto);
 		
 	}
 	
-//	To be used for deletion below
-//	return new ResponseEntity<ApiResponse>(new ApiResponse("User deleted successfully", true), null);
-	
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO , @PathVariable("userId") Integer userId ){
+	public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto , @PathVariable("userId") Integer userId ){
 		
-		UserDTO updatedUserDTO = this.userService.updateUser(userDTO, userId);
-		return ResponseEntity.ok(updatedUserDTO);
+		UserDto updatedUserDto = this.userService.updateUser(userDto, userId);
+		return ResponseEntity.ok(updatedUserDto);
 	}
 }
