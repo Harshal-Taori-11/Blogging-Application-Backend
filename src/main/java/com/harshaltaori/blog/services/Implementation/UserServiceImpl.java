@@ -29,9 +29,14 @@ public class UserServiceImpl implements UserService {
 	
 
 	@Override
-	public UserDto createUser(UserDto userDto) {
+	public UserDto createUser(UserDto userDto) {	
 		
 		User user = this.userDtoToUser(userDto);
+		
+		if (userRepository.existsByUserName(user.getUserName())) {
+            throw new IllegalArgumentException("Username already exists!");
+        }
+		
 		User savedUser = this.userRepository.save(user);
 		
 		return this.userToUserDto(savedUser);
@@ -39,6 +44,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto updateUser(UserDto userDto, Integer userId) {
+		
+		if (userRepository.existsByUserName(userDto.getUserName())) {
+            throw new IllegalArgumentException("Username already exists!");
+        }
 		
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User" , userId));
 		

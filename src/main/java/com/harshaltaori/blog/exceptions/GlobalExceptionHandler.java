@@ -1,5 +1,6 @@
 package com.harshaltaori.blog.exceptions;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.harshaltaori.blog.payloads.ApiResponse;
+
+import jakarta.validation.UnexpectedTypeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,5 +39,37 @@ public class GlobalExceptionHandler {
 		
 		return new ResponseEntity<>(exMap,HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(UnexpectedTypeException.class)
+	public ResponseEntity<ApiResponse> unexpectedTypeExceptionHandler(UnexpectedTypeException ex){
+		
+		String message = ex.getMessage();
+		
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+	public ResponseEntity<ApiResponse> sqlIntegrityConstraintViolationExceptionHandler(SQLIntegrityConstraintViolationException ex){
+		
+		String message;
+	    if (ex.getMessage().contains("user_name")) {
+	        message = "Username already exists. Please use another username.";
+	    } else {
+	        message = "A database constraint violation occurred: " + ex.getMessage();
+	    }
+
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ApiResponse> illegalArguementExceptionHandler(IllegalArgumentException ex){
+		
+		String message = ex.getMessage();
+		
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
+	
 }
 
