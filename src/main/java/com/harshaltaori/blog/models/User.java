@@ -38,6 +38,7 @@ public class User {
 	
 	private String about;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
-	private List<Blog> blogs = new ArrayList<>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<Blog> blogs = new ArrayList<>(); 
+
 }

@@ -42,7 +42,7 @@ public class CategoryController {
 	}
 
 	@GetMapping("/{categoryId}")
-	public ResponseEntity<CategoryDto> getCategory(@PathVariable("CategoryId") Integer categoryId) {
+	public ResponseEntity<CategoryDto> getCategory(@PathVariable("categoryId") Integer categoryId) {
 		
 		CategoryDto categoryDto = this.categoryService.getCategory(categoryId);
 		

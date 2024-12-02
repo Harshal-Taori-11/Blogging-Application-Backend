@@ -2,26 +2,24 @@ package com.harshaltaori.blog.services;
 
 import java.util.List;
 
-import com.harshaltaori.blog.models.Blog;
-import com.harshaltaori.blog.models.Category;
-import com.harshaltaori.blog.payloads.BlogDto;
+import com.harshaltaori.blog.payloads.BlogInputDto;
+import com.harshaltaori.blog.payloads.BlogOutputDto;
 
 public interface BlogService {
 	
-	Blog createBlog(BlogDto blogDto);
+	BlogOutputDto createBlog(BlogInputDto blogInputDto);
 	
-	Blog updateBlog(BlogDto blogDto);
+	BlogOutputDto updateBlog(BlogInputDto blogInputDto,Integer blogId);
 	
 	void deleteBlog(Integer blogId);
 	
-	List<Blog> getAllBlog();
+	BlogOutputDto getBlog(Integer blogId);
 	
-	Blog getBlog(Integer blogId);
+	List<BlogOutputDto> getAllBlogs();
 	
-	List<Blog> getAllBlogsByUser(Integer userId);
+	List<BlogOutputDto> getAllBlogsByUser(Integer userId);
 	
-	List<Blog> getAllBlogsByCategories(List<Category> categoryIds);
+	List<BlogOutputDto> getAllBlogByCategories(List<Integer> categoryIds);
 	
-	List<Blog> searchBlogs(String keyword);
-	
+	List<BlogOutputDto> getAllBlogTitlesByKeyword(String keyword);
 }
