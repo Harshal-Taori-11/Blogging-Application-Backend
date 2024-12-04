@@ -7,14 +7,20 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.harshaltaori.blog.configs.AppConstants;
 import com.harshaltaori.blog.exceptions.ResourceNotFoundException;
 import com.harshaltaori.blog.models.Blog;
 import com.harshaltaori.blog.models.Category;
 import com.harshaltaori.blog.models.User;
 import com.harshaltaori.blog.payloads.BlogInputDto;
 import com.harshaltaori.blog.payloads.BlogOutputDto;
+import com.harshaltaori.blog.payloads.BlogResponse;
 import com.harshaltaori.blog.repositories.BlogRepository;
 import com.harshaltaori.blog.repositories.CategoryRepository;
 import com.harshaltaori.blog.repositories.UserRepository;
@@ -43,6 +49,11 @@ public class BlogServiceImpl implements BlogService {
 	
 	private BlogOutputDto blogtoBlogOutputDto(Blog blog) {
 		return modelMapper.map(blog, BlogOutputDto.class);
+	}
+	
+	
+	private BlogResponse BlogPagesToBlogResponse(Page<Blog> blogPages) {
+		return modelMapper.map(blogPages, BlogResponse.class);
 	}
 	
 
@@ -110,41 +121,152 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public List<BlogOutputDto> getAllBlogs() {
+	public BlogResponse getAllBlogs(Integer pageNumber,Integer pageSize,String sortBy, String sortDirection) {
 		
-		List<Blog> blogs = this.blogRepository.findAll();
+//		Without Pagination and sorting
+		
+//		List<Blog> blogs = this.blogRepository.findAll();
+		
+		
+//     With pagination and sorting
+		
+		if(pageNumber<0) {
+			pageNumber = Integer.valueOf(AppConstants.PAGE_NUMBER);
+		}
+		
+		if(pageSize<0) {
+			pageSize = Integer.valueOf(AppConstants.PAGE_SIZE);
+		}
+		
+		
+		Sort sort = sortDirection.equalsIgnoreCase("Ascending")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
+		
+		Page<Blog> blogPages= this.blogRepository.findAll(pageable);
+		List<Blog> blogs = blogPages.getContent();
+		
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
 		
-		return blogOutputDtos;
+		BlogResponse blogResponse = new BlogResponse();
+		
+		blogResponse.setBlogOutputDtos(blogOutputDtos);
+		blogResponse.setPageNumber(blogPages.getNumber());
+		blogResponse.setPageSize(blogPages.getSize());
+		blogResponse.setTotalElements(blogPages.getTotalElements());
+		blogResponse.setTotalPages(blogPages.getTotalPages());
+		blogResponse.setLast(blogPages.isLast()); 
+		
+		return blogResponse;
 	}
 
+//	Without Pagination
+	
+//	@Override
+//	public List<BlogOutputDto> getAllBlogsByUser(Integer userId) {
+//		
+//		User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", userId));
+//		
+//		List<Blog> blogs = this.blogRepository.findByUser(user);
+//		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+//		
+//		return blogOutputDtos;
+//	}
+
+//  With Pagination
+	
 	@Override
-	public List<BlogOutputDto> getAllBlogsByUser(Integer userId) {
+	public BlogResponse getAllBlogsByUser(Integer userId, Integer pageNumber, Integer pageSize, String sortBy,
+			String sortDirection) {
 		
 		User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", userId));
 		
-		List<Blog> blogs = this.blogRepository.findByUser(user);
+		Sort sort = sortDirection.equalsIgnoreCase("Ascending")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		
+		Page<Blog> blogsPage = this.blogRepository.findByUser(user, pageable);
+		
+		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
+		
+		List<Blog> blogs = blogsPage.getContent();
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+		blogResponse.setBlogOutputDtos(blogOutputDtos);
 		
-		return blogOutputDtos;
+		return blogResponse;
 	}
+	
+	
+	
+	
+	
+//	Without Pagination
 
-	@Override
-	public List<BlogOutputDto> getAllBlogByCategories(List<Integer> categoryIds) {
-		
+//	@Override
+//	public List<BlogOutputDto> getAllBlogByCategories(List<Integer> categoryIds) {
+//		
 //		List<Category> listCategories = this.categoryRepository.findAllById(categoryIds);
 //		Set<Category> categories = listCategories.stream().collect(Collectors.toSet());
+//		
+//		List<Blog> blogs = this.blogRepository.findByCategories(categoryIds);
+//		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+//		
+//		return blogOutputDtos;
+//	}
+	
+	
+	
+//  With Pagination
+	@Override
+	public BlogResponse getAllBlogByCategories(List<Integer> categoryIds, Integer pageNumber, Integer pageSize,
+			String sortBy, String sortDirection) {
 		
-		List<Blog> blogs = this.blogRepository.findByCategories(categoryIds);
+		List<Category> listCategories = this.categoryRepository.findAllById(categoryIds);
+		Set<Category> categories = listCategories.stream().collect(Collectors.toSet());
+		
+		Sort sort = sortDirection.equalsIgnoreCase("Ascending")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		
+		Page<Blog> blogsPage = this.blogRepository.findByCategoriesIn(categories, pageable);
+		
+		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
+		
+		List<Blog> blogs = blogsPage.getContent();
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+		blogResponse.setBlogOutputDtos(blogOutputDtos);
 		
-		return blogOutputDtos;
+		return blogResponse;
 	}
 
 	@Override
 	public List<BlogOutputDto> getAllBlogTitlesByKeyword(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Blog> blogs = this.blogRepository.findByBlogTitleContaining(keyword);
+		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+		
+		return blogOutputDtos;
+	}
+
+
+	@Override
+	public BlogResponse getAllBlogTitleAndBlogContentBykeyword(String keyword, Integer pageNumber,
+			Integer pageSize, String sortBy, String sortDirection) {
+		
+		
+		Sort sort = sortDirection.equalsIgnoreCase("Ascending")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		
+		Page<Blog> blogsPage = this.blogRepository.findByBlogTitleContainingOrBlogContentContaining(keyword, keyword, pageable);
+		
+		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
+		
+		List<Blog> blogs = blogsPage.getContent();
+		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+		blogResponse.setBlogOutputDtos(blogOutputDtos);
+		
+		return blogResponse;
 	}
 
 }

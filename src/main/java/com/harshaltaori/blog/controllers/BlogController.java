@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.harshaltaori.blog.configs.AppConstants;
 import com.harshaltaori.blog.payloads.ApiResponse;
 import com.harshaltaori.blog.payloads.BlogInputDto;
 import com.harshaltaori.blog.payloads.BlogOutputDto;
+import com.harshaltaori.blog.payloads.BlogResponse;
 import com.harshaltaori.blog.services.BlogService;
 
 @RestController
@@ -44,26 +47,41 @@ public class BlogController {
 	
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<BlogOutputDto>> getAllBlogsByUser(){
+	public ResponseEntity<BlogResponse> getAllBlogsByUser(
+			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+			@RequestParam (value = "sortDirection",defaultValue = AppConstants.SORT_DIRECTION,required = false) String sortDirection
+			){
 		
-		List<BlogOutputDto> blogOutputDtos = this.blogService.getAllBlogs();
-		return new ResponseEntity<List<BlogOutputDto>>(blogOutputDtos,HttpStatus.OK);
+		BlogResponse blogResponse = this.blogService.getAllBlogs(pageNumber,pageSize,sortBy,sortDirection);
+		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
 	}
 	
 	
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<List<BlogOutputDto>> getAllBlogsByUser(@PathVariable Integer userId){
+	public ResponseEntity<BlogResponse> getAllBlogsByUser(@PathVariable Integer userId,
+			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+			@RequestParam (value = "sortDirection",defaultValue = AppConstants.SORT_DIRECTION,required = false) String sortDirection
+			){
 		
-		List<BlogOutputDto> blogOutputDtos = this.blogService.getAllBlogsByUser(userId);
-		return new ResponseEntity<List<BlogOutputDto>>(blogOutputDtos,HttpStatus.OK);
+		BlogResponse blogResponse = this.blogService.getAllBlogsByUser(userId,pageNumber,pageSize,sortBy,sortDirection);
+		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
 	}
 	
 	
 	@GetMapping("/categories")
-	public ResponseEntity<List<BlogOutputDto>> getAllBlogsByCategories(@RequestBody List<Integer> categoryIds){
+	public ResponseEntity<BlogResponse> getAllBlogsByCategories(@RequestBody List<Integer> categoryIds,
+			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+			@RequestParam (value = "sortDirection",defaultValue = AppConstants.SORT_DIRECTION,required = false) String sortDirection
+			){
 		
-		List<BlogOutputDto> blogOutputDtos = this.blogService.getAllBlogByCategories(categoryIds);
-		return new ResponseEntity<List<BlogOutputDto>>(blogOutputDtos,HttpStatus.OK);
+		BlogResponse blogResponse = this.blogService.getAllBlogByCategories(categoryIds,pageNumber,pageSize,sortBy,sortDirection);
+		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
 	}
 	
 	
@@ -82,5 +100,26 @@ public class BlogController {
 		return new ResponseEntity<ApiResponse>(new ApiResponse("Blog deleted successfully",true),HttpStatus.OK);
 	}
 	
+	
+	@GetMapping("/search/Title/{keyword}")
+	public ResponseEntity<List<BlogOutputDto>> searchByKeyword(@PathVariable String keyword){
+		
+		List<BlogOutputDto> blogOutputDtos = this.blogService.getAllBlogTitlesByKeyword(keyword);
+		
+		return ResponseEntity.ok().body(blogOutputDtos);
+	}
+	
+	@GetMapping("/search/TitleAndContent/{keyword}")
+	public ResponseEntity<BlogResponse> searchByKeyword(@PathVariable String keyword,
+			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+			@RequestParam (value = "sortDirection",defaultValue = AppConstants.SORT_DIRECTION,required = false) String sortDirection
+			){		
+		
+		BlogResponse blogResponse = this.blogService.getAllBlogTitleAndBlogContentBykeyword(keyword, pageNumber, pageSize, sortBy, sortDirection);
+		
+		return ResponseEntity.ok().body(blogResponse);
+	}
 	
 }

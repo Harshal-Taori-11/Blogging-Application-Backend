@@ -1,16 +1,17 @@
 package com.harshaltaori.blog.repositories;
 
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.harshaltaori.blog.models.Blog;
-import com.harshaltaori.blog.models.User;
 import com.harshaltaori.blog.models.Category;
-import java.util.Set;
-
+import com.harshaltaori.blog.models.User;
 
 public interface BlogRepository extends JpaRepository<Blog, Integer>{
 	
@@ -21,4 +22,11 @@ public interface BlogRepository extends JpaRepository<Blog, Integer>{
 	
 	List<Blog> findByBlogTitleContaining(String keyword);
 	
+	
+	//For Pagination and sorting
+	Page<Blog> findByCategoriesIn(Set<Category> categories,Pageable pageable);
+	
+	Page<Blog> findByUser(User user, Pageable pageable);
+	
+	Page<Blog> findByBlogTitleContainingOrBlogContentContaining(String keyword,String contentKeyword,Pageable pageable);
 }
