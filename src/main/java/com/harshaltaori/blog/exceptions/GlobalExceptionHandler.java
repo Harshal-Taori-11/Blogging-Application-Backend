@@ -1,5 +1,7 @@
 package com.harshaltaori.blog.exceptions;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +71,26 @@ public class GlobalExceptionHandler {
 		
 		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
 	}
+	
+	
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<ApiResponse> ioExceptionHandler(IOException ex){
+		
+		String message = ex.getMessage();
+		
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<ApiResponse> fileNotFoundExceptionHandler(FileNotFoundException ex){
+		
+		String message = ex.getMessage();
+		
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
+	
 	
 	
 }

@@ -1,10 +1,14 @@
 package com.harshaltaori.blog.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.harshaltaori.blog.configs.AppConstants;
 import com.harshaltaori.blog.payloads.ApiResponse;
@@ -21,6 +26,9 @@ import com.harshaltaori.blog.payloads.BlogInputDto;
 import com.harshaltaori.blog.payloads.BlogOutputDto;
 import com.harshaltaori.blog.payloads.BlogResponse;
 import com.harshaltaori.blog.services.BlogService;
+import com.harshaltaori.blog.services.FileService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -28,6 +36,9 @@ public class BlogController {
 	
 	@Autowired
 	private BlogService blogService;
+	
+	@Autowired
+	private FileService fileService;
 	
 	@PostMapping("/")
 	public ResponseEntity<BlogOutputDto> createBlog(@RequestBody BlogInputDto blogInputDto){
@@ -121,5 +132,32 @@ public class BlogController {
 		
 		return ResponseEntity.ok().body(blogResponse);
 	}
+	
+	
+	
+	@PostMapping("/image/upload/{blogId}")
+	public ResponseEntity<BlogOutputDto> uploadImage(
+			@RequestParam("image") MultipartFile image,
+			@PathVariable Integer blogId
+			) throws IOException{
+		
+		BlogOutputDto blogOutputDto = this.fileService.uploadImage(blogId, image);
+		
+		return ResponseEntity.ok(blogOutputDto);
+	}
+	
+	
+	
+	@GetMapping(value = "/image/{blogId}", produces = MediaType.IMAGE_JPEG_VALUE )
+	public  void getImage(@PathVariable Integer blogId,
+			HttpServletResponse httpServletResponse) throws IOException {
+		
+		InputStream resource = this.fileService.getBlogImage(blogId);
+		httpServletResponse.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		StreamUtils.copy(resource, httpServletResponse.getOutputStream());
+		
+	}
+	
+	
 	
 }
