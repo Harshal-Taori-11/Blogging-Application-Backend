@@ -29,4 +29,11 @@ public interface BlogRepository extends JpaRepository<Blog, Integer>{
 	Page<Blog> findByUser(User user, Pageable pageable);
 	
 	Page<Blog> findByBlogTitleContainingOrBlogContentContaining(String keyword,String contentKeyword,Pageable pageable);
+	
+	
+	//
+	
+	@Query("SELECT b FROM Blog b WHERE b.currentStatus = 'Approved'")
+	Page<Blog> findAllApprovedBlogs(Pageable pageable);
+
 }

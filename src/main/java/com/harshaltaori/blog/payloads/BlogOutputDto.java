@@ -15,6 +15,7 @@ public class BlogOutputDto {
 	private String blogTitle;
 	private String blogContent;
 	private String imageUrl;
+	private String currentStatus;
 	private Date addedOn;
 	private Date lastUpdatedOn;
 	private UserDto user;

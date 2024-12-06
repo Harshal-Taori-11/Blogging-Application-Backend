@@ -20,7 +20,7 @@ public interface BlogService {
 	
 	
 //	List<BlogOutputDto> getAllBlogsByUser(Integer userId);
-	BlogResponse getAllBlogsByUser(Integer userId,Integer pageNumber,Integer pageSize,String sortBy,String sortDirection);
+	BlogResponse getAllBlogsByUser (Integer userId,Integer pageNumber,Integer pageSize,String sortBy,String sortDirection);
 	
 //	List<BlogOutputDto> getAllBlogByCategories(List<Integer> categoryIds);
 	BlogResponse getAllBlogByCategories(List<Integer> categoryIds,Integer pageNumber,Integer pageSize,String sortBy,String sortDirection);
@@ -28,4 +28,10 @@ public interface BlogService {
 	List<BlogOutputDto> getAllBlogTitlesByKeyword(String keyword);
 	
 	BlogResponse getAllBlogTitleAndBlogContentBykeyword(String keyword,Integer pageNumber,Integer pageSize,String sortBy,String sortDirection);
+	
+	
+//  Related to approval for admin
+	BlogOutputDto approveBlog(Integer blogId); 
+	
+	
 }

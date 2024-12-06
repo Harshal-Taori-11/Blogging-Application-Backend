@@ -92,6 +92,14 @@ public class GlobalExceptionHandler {
 	
 	
 	
+	@ExceptionHandler(UnsupportedOperationException.class)
+	public ResponseEntity<ApiResponse> unsupportedOperationExceptionHandler(UnsupportedOperationException ex){
+		
+		String message = "Pass some other value for sortBy";
+		
+		return new ResponseEntity<>(new ApiResponse(message, false),HttpStatus.BAD_REQUEST);
+	}
+	
 	
 }
 

@@ -3,7 +3,6 @@ package com.harshaltaori.blog.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,5 +39,8 @@ public class User {
 	
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Blog> blogs = new ArrayList<>(); 
+	
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<Comment> comments = new ArrayList<>(); 
 
 }

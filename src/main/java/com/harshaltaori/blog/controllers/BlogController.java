@@ -58,7 +58,7 @@ public class BlogController {
 	
 	
 	@GetMapping("/all")
-	public ResponseEntity<BlogResponse> getAllBlogsByUser(
+	public ResponseEntity<BlogResponse> getAllBlogs(
 			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
 			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
 			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
@@ -158,6 +158,13 @@ public class BlogController {
 		
 	}
 	
+	
+	@PutMapping("/approve/{blogId}")
+	public ResponseEntity<BlogOutputDto> approveBlog(@PathVariable Integer blogId){
+		
+		BlogOutputDto blogOutputDto = this.blogService.approveBlog(blogId);
+		return ResponseEntity.ok(blogOutputDto);
+	}
 	
 	
 }

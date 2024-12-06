@@ -71,7 +71,7 @@ public class BlogServiceImpl implements BlogService {
 			throw new IllegalArgumentException("Total number of categories should be minimum of 1 and maximum of 5");
 		}
 		blog.setCategories(categories);
-		
+		blog.setCurrentStatus("Pending");
 		blog.setAddedOn(new Date());
 		blog.setLastUpdatedOn(new Date());
 		
@@ -95,6 +95,7 @@ public class BlogServiceImpl implements BlogService {
 		blog.setCategories(categories);
 		blog.setBlogTitle(blogInputDto.getBlogTitle());
 		blog.setBlogContent(blogInputDto.getBlogContent());
+		blog.setCurrentStatus("Pending");
 		blog.setImageUrl(blogInputDto.getImageUrl());
 		blog.setLastUpdatedOn(new Date());
 		
@@ -116,6 +117,10 @@ public class BlogServiceImpl implements BlogService {
 	public BlogOutputDto getBlog(Integer blogId) {
 		
 		Blog blog = this.blogRepository.findById(blogId).orElseThrow(()-> new ResourceNotFoundException("Blog", blogId));
+		
+		if(blog.getCurrentStatus() == "Pending") {
+			throw new IllegalArgumentException("The blog is in pending state.");
+		}
 		
 		return this.blogtoBlogOutputDto(blog);
 	}
@@ -143,7 +148,8 @@ public class BlogServiceImpl implements BlogService {
 		
 		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
 		
-		Page<Blog> blogPages= this.blogRepository.findAll(pageable);
+		Page<Blog> blogPages = this.blogRepository.findAllApprovedBlogs(pageable);
+//		Page<Blog> blogPages= this.blogRepository.findAll(pageable);
 		List<Blog> blogs = blogPages.getContent();
 		
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
@@ -159,6 +165,7 @@ public class BlogServiceImpl implements BlogService {
 		
 		return blogResponse;
 	}
+	
 
 //	Without Pagination
 	
@@ -189,7 +196,8 @@ public class BlogServiceImpl implements BlogService {
 		
 		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
 		
-		List<Blog> blogs = blogsPage.getContent();
+		List<Blog> blogs = blogsPage.getContent().stream().filter(blog -> "Approved".equals(blog.getCurrentStatus()))
+                .collect(Collectors.toList());;
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
 		blogResponse.setBlogOutputDtos(blogOutputDtos);
 		
@@ -232,7 +240,8 @@ public class BlogServiceImpl implements BlogService {
 		
 		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
 		
-		List<Blog> blogs = blogsPage.getContent();
+		List<Blog> blogs = blogsPage.getContent().stream().filter(blog -> "Approved".equals(blog.getCurrentStatus()))
+                .collect(Collectors.toList());;
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
 		blogResponse.setBlogOutputDtos(blogOutputDtos);
 		
@@ -242,7 +251,8 @@ public class BlogServiceImpl implements BlogService {
 	@Override
 	public List<BlogOutputDto> getAllBlogTitlesByKeyword(String keyword) {
 		
-		List<Blog> blogs = this.blogRepository.findByBlogTitleContaining(keyword);
+		List<Blog> blogs = this.blogRepository.findByBlogTitleContaining(keyword).stream().filter(blog -> "Approved".equals(blog.getCurrentStatus()))
+                .collect(Collectors.toList());
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
 		
 		return blogOutputDtos;
@@ -262,11 +272,23 @@ public class BlogServiceImpl implements BlogService {
 		
 		BlogResponse blogResponse = this.BlogPagesToBlogResponse(blogsPage);
 		
-		List<Blog> blogs = blogsPage.getContent();
+		List<Blog> blogs = blogsPage.getContent().stream().filter(blog -> "Approved".equals(blog.getCurrentStatus()))
+                .collect(Collectors.toList());;
 		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
 		blogResponse.setBlogOutputDtos(blogOutputDtos);
 		
 		return blogResponse;
+	}
+
+
+	@Override
+	public BlogOutputDto approveBlog(Integer blogId) {
+		
+		Blog blog = this.blogRepository.findById(blogId).orElseThrow(()-> new ResourceNotFoundException("Blog", blogId));
+		blog.setCurrentStatus("Approved");
+		
+		BlogOutputDto blogOutputDto = this.modelMapper.map(this.blogRepository.save(blog), BlogOutputDto.class);
+		return blogOutputDto;
 	}
 
 }
