@@ -17,6 +17,7 @@ import com.harshaltaori.blog.repositories.BlogRepository;
 import com.harshaltaori.blog.repositories.CommentRepository;
 import com.harshaltaori.blog.repositories.UserRepository;
 import com.harshaltaori.blog.services.CommentService;
+import com.harshaltaori.blog.utils.ToxicFilter;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -38,16 +39,19 @@ public class CommentServiceImpl implements CommentService {
 		
 		Comment comment = this.modelMapper.map(commentDto, Comment.class);
 		
-		Blog blog = this.blogRepository.findById(blogId).orElseThrow(() -> new ResourceNotFoundException("Blog",blogId));
-		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User",userId));
+		if(ToxicFilter.isToxicComment(comment.getComment())) {
+			throw new IllegalArgumentException("Toxic comment.");
+		}
+		else {
+			Blog blog = this.blogRepository.findById(blogId).orElseThrow(() -> new ResourceNotFoundException("Blog",blogId));
+			User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User",userId));
 		
+			comment.setBlog(blog);
+			comment.setUser(user);
 		
-		comment.setBlog(blog);
-		comment.setUser(user);
-		
-		Comment savedComment = this.commentRepository.save(comment);
-		
-		return this.modelMapper.map(savedComment, CommentOutputDto.class);
+			Comment savedComment = this.commentRepository.save(comment);
+			return this.modelMapper.map(savedComment, CommentOutputDto.class);
+		}		
 	}
 
 	@Override
