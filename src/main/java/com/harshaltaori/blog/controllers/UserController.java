@@ -24,12 +24,12 @@ public class UserController {
 	private UserService userService;
 	
 	
-	@PostMapping("/")
-	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
-		
-		UserDto createdUserDto = this.userService.createUser(userDto); 
-		return new ResponseEntity<UserDto>(createdUserDto,HttpStatus.CREATED);
-	}
+//	@PostMapping("/")
+//	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
+//		
+//		UserDto createdUserDto = this.userService.createUser(userDto); 
+//		return new ResponseEntity<UserDto>(createdUserDto,HttpStatus.CREATED);
+//	}
 	
 	@GetMapping("/{userId}")
 	public ResponseEntity<UserDto> getUser(@PathVariable("userId") Integer userId){

@@ -1,5 +1,10 @@
 package com.harshaltaori.blog.payloads;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.management.relation.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,7 +22,7 @@ public class UserDto {
 	
 	@NotBlank
 	@Size(min = 4,message = "Username must be minimum of 4 characters.")
-	private String userName;
+	private String name;
 	
 	@Email(message = "Email address not Valid!")
 	private String emailId;
@@ -29,5 +34,8 @@ public class UserDto {
 	@NotBlank
 	@Size(min = 15, message = "Provide more information avout you.")
 	private String about;
+	
+	
+	private Set<Role> roles = new HashSet<>();
 	
 }
