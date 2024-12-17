@@ -19,13 +19,13 @@ public class AppConstants {
 	//Jwt constants
 	public static final long JWT_VALIDITY = 60*60; // In seconds=1hr
 	
-	public static final String JWT_SECRET_KEY = "Itsherchoicehahahaha";
+	public static final String JWT_SECRET_KEY = "ItsherchoicehahahahaThisIsA256BitSecretKeyForJWTSigning!";
 	
 	public static final String[] PUBLIC_URLS = {
 			"/api/auth/**",
 	};
-	
-	public static final int NORMAL_USER = 502;
-	public static final int ADMIN_USER = 501;
+
+	public static final Integer NORMAL_USER = 501;
+	public static final Integer ADMIN_USER = 502;
 	
 }

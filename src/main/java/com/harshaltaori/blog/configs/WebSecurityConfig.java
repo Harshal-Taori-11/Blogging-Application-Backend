@@ -21,7 +21,7 @@ import com.harshaltaori.blog.secuirty.JwtAuthenticationEntryPoint;
 import com.harshaltaori.blog.secuirty.JwtAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 	
@@ -62,7 +62,8 @@ public class WebSecurityConfig {
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests( auth -> auth
 						.requestMatchers(AppConstants.PUBLIC_URLS).permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/blogs/**").hasAnyAuthority("USER","ADMIN")
+						.requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+						.requestMatchers("/api/categories/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(daoAuthenticationProvider())
