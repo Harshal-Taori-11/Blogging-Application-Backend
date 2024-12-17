@@ -1,12 +1,14 @@
 package com.harshaltaori.blog.services;
 
-import com.harshaltaori.blog.payloads.UserDto;
+import com.harshaltaori.blog.payloads.UserInputDto;
+import com.harshaltaori.blog.payloads.UserOutputDto;
 
 public interface UserService {
 	
-	UserDto createUser(UserDto userDto);
+	UserOutputDto createUser(UserInputDto userDto);
 	
-	UserDto updateUser(UserDto userDto, Integer userId);
+	UserOutputDto
+	updateUser(UserInputDto userDto, Integer userId);
 	
-	UserDto getUserById(Integer userId);
+	UserOutputDto getUserById(Integer userId);
 }

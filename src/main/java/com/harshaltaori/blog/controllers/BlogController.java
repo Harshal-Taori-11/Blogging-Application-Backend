@@ -41,6 +41,7 @@ public class BlogController {
 	@Autowired
 	private FileService fileService;
 	
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PostMapping("/")
 	public ResponseEntity<BlogOutputDto> createBlog(@RequestBody BlogInputDto blogInputDto){
 		
@@ -58,7 +59,7 @@ public class BlogController {
 	}
 	
 	
-	@GetMapping("/all")
+	@GetMapping("/all/Approved")
 	public ResponseEntity<BlogResponse> getAllBlogs(
 			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
 			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
@@ -67,6 +68,19 @@ public class BlogController {
 			){
 		
 		BlogResponse blogResponse = this.blogService.getAllBlogs(pageNumber,pageSize,sortBy,sortDirection);
+		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/all/Pending")
+	public ResponseEntity<BlogResponse> getAllPendingBlogs(
+			@RequestParam (value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)Integer pageNumber,
+			@RequestParam (value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+			@RequestParam (value = "sortBy",defaultValue = AppConstants.SORT_BY,required = false) String sortBy,
+			@RequestParam (value = "sortDirection",defaultValue = AppConstants.SORT_DIRECTION,required = false) String sortDirection
+			){
+		
+		BlogResponse blogResponse = this.blogService.getAllPendingBlogs(pageNumber,pageSize,sortBy,sortDirection);
 		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
 	}
 	
@@ -96,7 +110,7 @@ public class BlogController {
 		return new ResponseEntity<BlogResponse>(blogResponse,HttpStatus.OK);
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PutMapping("/{blogId}")
 	public ResponseEntity<BlogOutputDto> updateBlog(@RequestBody BlogInputDto blogInputDto ,@PathVariable Integer blogId){
 		
@@ -104,7 +118,7 @@ public class BlogController {
 		return new ResponseEntity<BlogOutputDto>(blogOutputDto,HttpStatus.OK);
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@DeleteMapping("/{blogId}")
 	public ResponseEntity<ApiResponse> deleteBlog(@PathVariable Integer blogId){
 		
@@ -135,7 +149,7 @@ public class BlogController {
 	}
 	
 	
-	
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PostMapping("/image/upload/{blogId}")
 	public ResponseEntity<BlogOutputDto> uploadImage(
 			@RequestParam("image") MultipartFile image,
@@ -148,7 +162,7 @@ public class BlogController {
 	}
 	
 	
-	
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@GetMapping(value = "/image/{blogId}", produces = MediaType.IMAGE_JPEG_VALUE )
 	public  void getImage(@PathVariable Integer blogId,
 			HttpServletResponse httpServletResponse) throws IOException {
@@ -159,7 +173,7 @@ public class BlogController {
 		
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PutMapping("/approve/{blogId}")
 	public ResponseEntity<BlogOutputDto> approveBlog(@PathVariable Integer blogId){
 		

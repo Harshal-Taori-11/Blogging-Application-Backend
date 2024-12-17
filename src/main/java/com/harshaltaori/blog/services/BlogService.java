@@ -33,5 +33,6 @@ public interface BlogService {
 //  Related to approval for admin
 	BlogOutputDto approveBlog(Integer blogId); 
 	
+	BlogResponse getAllPendingBlogs(Integer pageNumber,Integer pageSize,String sortBy, String sortDirection);
 	
 }

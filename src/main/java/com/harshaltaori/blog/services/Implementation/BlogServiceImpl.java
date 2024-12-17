@@ -279,6 +279,47 @@ public class BlogServiceImpl implements BlogService {
 		
 		return blogResponse;
 	}
+	
+	@Override
+	public BlogResponse getAllPendingBlogs(Integer pageNumber,Integer pageSize,String sortBy, String sortDirection) {
+		
+//		Without Pagination and sorting
+		
+//		List<Blog> blogs = this.blogRepository.findAll();
+		
+		
+//     With pagination and sorting
+		
+		if(pageNumber<0) {
+			pageNumber = Integer.valueOf(AppConstants.PAGE_NUMBER);
+		}
+		
+		if(pageSize<0) {
+			pageSize = Integer.valueOf(AppConstants.PAGE_SIZE);
+		}
+		
+		
+		Sort sort = sortDirection.equalsIgnoreCase("Ascending")? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
+		
+		Page<Blog> blogPages = this.blogRepository.findAllPendingBlogs(pageable);
+//		Page<Blog> blogPages= this.blogRepository.findAll(pageable);
+		List<Blog> blogs = blogPages.getContent();
+		
+		List<BlogOutputDto> blogOutputDtos = blogs.stream().map((blog)-> this.blogtoBlogOutputDto(blog)).collect(Collectors.toList());
+		
+		BlogResponse blogResponse = new BlogResponse();
+		
+		blogResponse.setBlogOutputDtos(blogOutputDtos);
+		blogResponse.setPageNumber(blogPages.getNumber());
+		blogResponse.setPageSize(blogPages.getSize());
+		blogResponse.setTotalElements(blogPages.getTotalElements());
+		blogResponse.setTotalPages(blogPages.getTotalPages());
+		blogResponse.setLast(blogPages.isLast()); 
+		
+		return blogResponse;
+	}
 
 
 	@Override

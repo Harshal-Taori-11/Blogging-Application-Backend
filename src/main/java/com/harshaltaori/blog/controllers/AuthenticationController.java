@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.harshaltaori.blog.payloads.JWTRequest;
 import com.harshaltaori.blog.payloads.JWTResponse;
-import com.harshaltaori.blog.payloads.UserDto;
+import com.harshaltaori.blog.payloads.UserInputDto;
+import com.harshaltaori.blog.payloads.UserOutputDto;
 import com.harshaltaori.blog.secuirty.JwtTokenHelper;
 import com.harshaltaori.blog.services.UserService;
 
@@ -37,10 +38,10 @@ public class AuthenticationController {
 	private UserService userService;
 	
 	@PostMapping("/register")
-	public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto){
+	public ResponseEntity<UserOutputDto> registerUser(@RequestBody UserInputDto userInputDto){
 		
-		UserDto createdDto = this.userService.createUser(userDto);
-		return new ResponseEntity<UserDto>(createdDto,HttpStatus.CREATED);
+		UserOutputDto createdDto = this.userService.createUser(userInputDto);
+		return new ResponseEntity<UserOutputDto>(createdDto,HttpStatus.CREATED);
 	}
 	
 	private void authenticate(String userName, String password) {

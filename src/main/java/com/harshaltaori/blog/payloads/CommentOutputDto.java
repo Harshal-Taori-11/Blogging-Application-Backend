@@ -11,5 +11,5 @@ public class CommentOutputDto {
 	
 	private Integer commentId;
 	private String comment;
-	private UserDto user;
+	private UserOutputDto user;
 }

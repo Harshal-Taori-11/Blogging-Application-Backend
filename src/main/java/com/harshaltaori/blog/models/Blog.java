@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +36,7 @@ public class Blog {
 	
 	private String blogTitle;
 	
+	@Column(length = 1000)
 	private String blogContent;
 	
 	private String currentStatus;

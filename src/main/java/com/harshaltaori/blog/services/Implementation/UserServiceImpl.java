@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.harshaltaori.blog.models.Roles;
 import com.harshaltaori.blog.models.User;
-import com.harshaltaori.blog.payloads.UserDto;
+import com.harshaltaori.blog.payloads.UserInputDto;
+import com.harshaltaori.blog.payloads.UserOutputDto;
 import com.harshaltaori.blog.repositories.RoleRepository;
 import com.harshaltaori.blog.repositories.UserRepository;
 import com.harshaltaori.blog.services.UserService;
@@ -30,59 +31,60 @@ public class UserServiceImpl implements UserService {
 	private PasswordEncoder passwordEncoder;
 	
 	
-	private User userDtoToUser(UserDto userDto) {
-		return modelMapper.map(userDto,User.class);
+	private User userInputDtoToUser(UserInputDto userInputDto) {
+		return modelMapper.map(userInputDto,User.class);
 	}
 	
-	private UserDto userToUserDto(User user) {
-		return modelMapper.map(user, UserDto.class);
+	private UserOutputDto userToUserOutputDto(User user) {
+		return modelMapper.map(user, UserOutputDto.class);
 	}
 	
 
 	@Override
-	public UserDto createUser(UserDto userDto) {	
+	public UserOutputDto createUser(UserInputDto userInputDto) {	
 		
-		User user = this.userDtoToUser(userDto);
+		User user = this.userInputDtoToUser(userInputDto);
 		
-		if (userRepository.existsByName(user.getName())) {
-            throw new IllegalArgumentException("Username already exists!");
+		if (userRepository.existsByEmailId(userInputDto.getEmailId())) {
+            throw new IllegalArgumentException("UserEmailId already exists!");
         }
 		
-		user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
+		user.setPassword(this.passwordEncoder.encode(userInputDto.getPassword()));
 		
 		Roles role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
 		user.getRoles().add(role);
 		
 		User savedUser = this.userRepository.save(user);
 		
-		return this.userToUserDto(savedUser);
+		return this.userToUserOutputDto(savedUser);
 	}
 
 	@Override
-	public UserDto updateUser(UserDto userDto, Integer userId) {
+	public UserOutputDto updateUser(UserInputDto userInputDto, Integer userId) {
 		
-		if (userRepository.existsByName(userDto.getName())) {
-            throw new IllegalArgumentException("Username already exists!");
+		if (userRepository.existsByEmailId(userInputDto.getEmailId())) {
+            throw new IllegalArgumentException("UserEmailId already exists!");
         }
+		
 		
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User" , userId));
 		
-		user.setName(userDto.getName());
-		user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
-		user.setEmailId(userDto.getEmailId());
-		user.setAbout(userDto.getAbout());
+		user.setName(userInputDto.getName());
+		user.setPassword(this.passwordEncoder.encode(userInputDto.getPassword()));
+		user.setEmailId(userInputDto.getEmailId());
+		user.setAbout(userInputDto.getAbout());
 		
 		User updatedUser = this.userRepository.save(user);
 		
-		return this.userToUserDto(updatedUser);
+		return this.userToUserOutputDto(updatedUser);
 	}
 
 	@Override
-	public UserDto getUserById(Integer userId) {
+	public UserOutputDto getUserById(Integer userId) {
 		
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User" , userId));
 	
-		return this.userToUserDto(user);
+		return this.userToUserOutputDto(user);
 	}
 
 }

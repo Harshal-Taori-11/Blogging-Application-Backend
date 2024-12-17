@@ -36,4 +36,6 @@ public interface BlogRepository extends JpaRepository<Blog, Integer>{
 	@Query("SELECT b FROM Blog b WHERE b.currentStatus = 'Approved'")
 	Page<Blog> findAllApprovedBlogs(Pageable pageable);
 
+	@Query("SELECT b FROM Blog b WHERE b.currentStatus = 'Pending'")
+	Page<Blog> findAllPendingBlogs(Pageable pageable);
 }

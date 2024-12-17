@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		}
 		
 		
-		if(userName == null && authentication == null) {
+		if(userName != null && authentication == null) {
 			
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
 			

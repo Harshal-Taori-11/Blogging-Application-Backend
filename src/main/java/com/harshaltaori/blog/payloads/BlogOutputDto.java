@@ -18,7 +18,7 @@ public class BlogOutputDto {
 	private String currentStatus;
 	private Date addedOn;
 	private Date lastUpdatedOn;
-	private UserDto user;
+	private UserOutputDto user;
 	private Set<CategoryDto> categories;
 	
 	
